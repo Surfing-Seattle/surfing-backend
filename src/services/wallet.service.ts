@@ -5,9 +5,14 @@ import { WalletAuthRequest } from '../types/wallet.types';
 
 export class WalletService {
   /**
+   * Generate an authentication message for wallet signing
+   */
+  static generateAuthMessage(publicKey: string): string {
+    return `Sign this message for authenticating with your wallet\nWallet: ${publicKey}\nTimestamp: ${Date.now()}`;
+  }
+
+  /**
    * Verify a Solana wallet signature
-   * @param auth WalletAuthRequest containing publicKey, signature, and message
-   * @returns boolean indicating if the signature is valid
    */
   static async verifySignature(auth: WalletAuthRequest): Promise<boolean> {
     try {
@@ -27,18 +32,8 @@ export class WalletService {
         publicKey.toBytes()
       );
     } catch (error) {
-      console.error('Error verifying wallet signature:', error);
+      console.error('Error verifying signature:', error);
       return false;
     }
-  }
-
-  /**
-   * Generate a challenge message for wallet signing
-   * @param publicKey wallet public key
-   * @returns string message to be signed
-   */
-  static generateAuthMessage(publicKey: string): string {
-    const timestamp = Date.now();
-    return `Sign this message for authenticating with your wallet\nWallet: ${publicKey}\nTimestamp: ${timestamp}`;
   }
 }

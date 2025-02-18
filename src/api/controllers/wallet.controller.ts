@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { WalletService } from '../../services/wallet.service';
+import { JWTService } from '../../services/jwt.service';
+import { UserService } from '../../services/user.service';
 import { WalletAuthRequest } from '../../types/wallet.types';
 
 export class WalletController {
@@ -28,7 +30,7 @@ export class WalletController {
    */
   static async verifyWallet(req: Request, res: Response): Promise<void> {
     try {
-      const auth: WalletAuthRequest = req.body;
+      const auth = req.body as WalletAuthRequest;
 
       if (!auth.publicKey || !auth.signature || !auth.message) {
         res.status(400).json({ error: 'Missing required fields' });
@@ -42,10 +44,17 @@ export class WalletController {
         return;
       }
 
-      // TODO: Generate JWT token here
+      // Find or create user
+      const user = await UserService.findOrCreateByWallet(auth.publicKey);
+
+      // Generate JWT token
+      const token = JWTService.generateToken(auth.publicKey);
+
       res.json({
-        message: 'Wallet verified successfully',
-        publicKey: auth.publicKey
+        token,
+        expiresIn: 24 * 60 * 60, // 24 hours in seconds
+        publicKey: auth.publicKey,
+        userId: user._id
       });
     } catch (error) {
       console.error('Error verifying wallet:', error);
