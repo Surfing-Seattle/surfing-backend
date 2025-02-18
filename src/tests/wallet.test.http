@@ -1,0 +1,13 @@
+### Get Challenge Message
+GET http://localhost:3001/api/v1/auth/wallet/challenge?publicKey=YOUR_PUBLIC_KEY_HERE
+Content-Type: application/json
+
+### Verify Wallet
+POST http://localhost:3001/api/v1/auth/wallet/verify
+Content-Type: application/json
+
+{
+    "publicKey": "YOUR_PUBLIC_KEY_HERE",
+    "message": "CHALLENGE_MESSAGE_HERE",
+    "signature": "SIGNATURE_HERE"
+}
